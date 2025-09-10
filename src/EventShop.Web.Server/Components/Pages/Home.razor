@@ -1,0 +1,163 @@
+﻿@page "/"
+@inject ICommandDispatcher CommandDispatcher
+@inject IQueryDispatcher QueryDispatcher
+
+<PageTitle>EventShop - Product Catalog</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">🛍️ EventShop - Product Catalog</h1>
+            <p class="lead">Welcome to EventShop! This is a sample ecommerce application built with Blazor and OpenCQRS.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Product Categories</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" @onclick="AddSampleProducts">Add Sample Products</button>
+        </div>
+    </div>
+
+    @if (products.Any())
+    {
+        <div class="row">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">@product.Description</p>
+                            <p class="card-text">
+                                <small class="text-muted">Category: @product.Category</small>
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 mb-0">$@product.Price.ToString("F2")</span>
+                                    <span class="badge @(product.Stock > 0 ? "bg-success" : "bg-danger")">
+                                        @(product.Stock > 0 ? $"{product.Stock} in stock" : "Out of stock")
+                                    </span>
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mt-2" disabled="@(product.Stock == 0)">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <h3>No Products Available</h3>
+                        <p class="text-muted">Get started by adding some sample products to the catalog.</p>
+                        <button class="btn btn-primary" @onclick="AddSampleProducts">Add Sample Products</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ProductDto> products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            var query = new GetAllProductsQuery();
+            products = await QueryDispatcher.DispatchAsync(query) ?? new List<ProductDto>();
+        }
+        catch (Exception ex)
+        {
+            // In a real app, you'd want proper error handling and logging
+            Console.WriteLine($"Error loading products: {ex.Message}");
+            products = new List<ProductDto>();
+        }
+    }
+
+    private async Task AddSampleProducts()
+    {
+        try
+        {
+            var sampleProducts = new[]
+            {
+                new CreateProductCommand
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Laptop Computer",
+                    Description = "High-performance laptop for work and gaming",
+                    Price = 999.99m,
+                    Stock = 10,
+                    Category = "Electronics",
+                    ImageUrl = "https://via.placeholder.com/300x200/0066cc/ffffff?text=Laptop"
+                },
+                new CreateProductCommand
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Wireless Headphones",
+                    Description = "Premium noise-cancelling wireless headphones",
+                    Price = 199.99m,
+                    Stock = 25,
+                    Category = "Electronics",
+                    ImageUrl = "https://via.placeholder.com/300x200/cc6600/ffffff?text=Headphones"
+                },
+                new CreateProductCommand
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Coffee Mug",
+                    Description = "Ceramic coffee mug with EventShop logo",
+                    Price = 14.99m,
+                    Stock = 50,
+                    Category = "Accessories",
+                    ImageUrl = "https://via.placeholder.com/300x200/009900/ffffff?text=Coffee+Mug"
+                },
+                new CreateProductCommand
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "T-Shirt",
+                    Description = "Comfortable cotton t-shirt with EventShop branding",
+                    Price = 24.99m,
+                    Stock = 0, // Out of stock for demonstration
+                    Category = "Apparel",
+                    ImageUrl = "https://via.placeholder.com/300x200/cc0066/ffffff?text=T-Shirt"
+                }
+            };
+
+            foreach (var product in sampleProducts)
+            {
+                await CommandDispatcher.DispatchAsync(product);
+            }
+
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding sample products: {ex.Message}");
+        }
+    }
+}

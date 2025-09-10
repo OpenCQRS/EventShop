@@ -1,0 +1,6 @@
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.csproj.AssemblyReference.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.AssemblyInfoInputs.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.AssemblyInfo.cs
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.csproj.CoreCompileInputs.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Infrastructure/obj/Debug/net8.0/EventShop.Infrastructure.sourcelink.json

@@ -1,0 +1,61 @@
+{
+  "Files": [
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/bin/Debug/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/obj/Debug/net8.0/compressed/d126fr3x2a.gz",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/obj/Debug/net8.0/scopedcss/bundle/EventShop.Web.Client.styles.css",
+      "PackagePath": "staticwebassets/EventShop.Web.Client.styles.css"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/icon-192.png",
+      "PackagePath": "staticwebassets/icon-192.png"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "/home/runner/work/EventShop/EventShop/src/EventShop.Web.Client/wwwroot/sample-data/weather.json",
+      "PackagePath": "staticwebassets/sample-data/weather.json"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.EventShop.Web.Client.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.EventShop.Web.Client.props",
+      "PackagePath": "build\\EventShop.Web.Client.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.EventShop.Web.Client.props",
+      "PackagePath": "buildMultiTargeting\\EventShop.Web.Client.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.EventShop.Web.Client.props",
+      "PackagePath": "buildTransitive\\EventShop.Web.Client.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

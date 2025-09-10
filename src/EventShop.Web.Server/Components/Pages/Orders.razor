@@ -1,0 +1,264 @@
+@page "/orders"
+@inject ICommandDispatcher CommandDispatcher
+@inject IQueryDispatcher QueryDispatcher
+
+<PageTitle>Orders - EventShop</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">📦 Orders</h1>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h3>Create New Order</h3>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Create Order</h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@newOrder" OnValidSubmit="CreateOrder">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        
+                        <div class="mb-3">
+                            <label for="customerName" class="form-label">Customer Name</label>
+                            <InputText id="customerName" class="form-control" @bind-Value="newOrder.CustomerName" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="customerEmail" class="form-label">Customer Email</label>
+                            <InputText id="customerEmail" class="form-control" @bind-Value="newOrder.CustomerEmail" />
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" disabled="@isCreating">
+                            @if (isCreating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            Create Order
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sample Orders</h5>
+                </div>
+                <div class="card-body">
+                    <p>Create sample orders for demonstration:</p>
+                    <button class="btn btn-outline-primary" @onclick="CreateSampleOrders">Create Sample Orders</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (orders.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <h3>Order List</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in orders)
+                            {
+                                <tr>
+                                    <td><code>@order.Id.ToString("N")[..8]...</code></td>
+                                    <td>@order.CustomerName</td>
+                                    <td>@order.CustomerEmail</td>
+                                    <td>@order.Items.Count</td>
+                                    <td>$@order.TotalAmount.ToString("F2")</td>
+                                    <td>
+                                        <span class="badge bg-@GetStatusColor(order.Status)">@order.Status</span>
+                                    </td>
+                                    <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (order.Status == OrderStatus.Pending)
+                                        {
+                                            <button class="btn btn-sm btn-success" @onclick="() => ConfirmOrder(order.Id)">
+                                                Confirm
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h4>No Orders Found</h4>
+                    <p>Create your first order using the form above.</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<OrderDto> orders = new();
+    private CreateOrderModel newOrder = new();
+    private bool isCreating = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        // In a real implementation, we'd have a GetAllOrdersQuery
+        // For now, we'll use a placeholder list
+        orders = new List<OrderDto>();
+    }
+
+    private async Task CreateOrder()
+    {
+        if (string.IsNullOrWhiteSpace(newOrder.CustomerName) || string.IsNullOrWhiteSpace(newOrder.CustomerEmail))
+            return;
+
+        isCreating = true;
+        try
+        {
+            var command = new CreateOrderCommand
+            {
+                Id = Guid.NewGuid(),
+                CustomerName = newOrder.CustomerName,
+                CustomerEmail = newOrder.CustomerEmail
+            };
+
+            await CommandDispatcher.DispatchAsync(command);
+            
+            // Add to local list for demonstration
+            orders.Add(new OrderDto
+            {
+                Id = command.Id,
+                CustomerName = command.CustomerName,
+                CustomerEmail = command.CustomerEmail,
+                Items = new List<OrderItemDto>(),
+                TotalAmount = 0,
+                Status = OrderStatus.Pending,
+                OrderDate = DateTime.UtcNow
+            });
+
+            newOrder = new CreateOrderModel();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating order: {ex.Message}");
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+
+    private async Task CreateSampleOrders()
+    {
+        try
+        {
+            var sampleOrders = new[]
+            {
+                new { Name = "John Doe", Email = "john.doe@example.com" },
+                new { Name = "Jane Smith", Email = "jane.smith@example.com" },
+                new { Name = "Bob Johnson", Email = "bob.johnson@example.com" }
+            };
+
+            foreach (var sample in sampleOrders)
+            {
+                var command = new CreateOrderCommand
+                {
+                    Id = Guid.NewGuid(),
+                    CustomerName = sample.Name,
+                    CustomerEmail = sample.Email
+                };
+
+                await CommandDispatcher.DispatchAsync(command);
+                
+                orders.Add(new OrderDto
+                {
+                    Id = command.Id,
+                    CustomerName = command.CustomerName,
+                    CustomerEmail = command.CustomerEmail,
+                    Items = new List<OrderItemDto>(),
+                    TotalAmount = 0,
+                    Status = OrderStatus.Pending,
+                    OrderDate = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 30))
+                });
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating sample orders: {ex.Message}");
+        }
+    }
+
+    private async Task ConfirmOrder(Guid orderId)
+    {
+        try
+        {
+            var command = new ConfirmOrderCommand { Id = orderId };
+            await CommandDispatcher.DispatchAsync(command);
+            
+            var order = orders.FirstOrDefault(o => o.Id == orderId);
+            if (order != null)
+            {
+                order.Status = OrderStatus.Confirmed;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error confirming order: {ex.Message}");
+        }
+    }
+
+    private string GetStatusColor(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "warning",
+            OrderStatus.Confirmed => "info",
+            OrderStatus.Completed => "success",
+            OrderStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+
+    public class CreateOrderModel
+    {
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerEmail { get; set; } = string.Empty;
+    }
+}

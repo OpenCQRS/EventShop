@@ -1,0 +1,13 @@
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.csproj.AssemblyReference.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.AssemblyInfoInputs.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.AssemblyInfo.cs
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.csproj.CoreCompileInputs.cache
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.sourcelink.json
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/bin/Debug/net8.0/EventShop.Domain.deps.json
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/bin/Debug/net8.0/EventShop.Domain.dll
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/bin/Debug/net8.0/EventShop.Domain.pdb
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.dll
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/refint/EventShop.Domain.dll
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/EventShop.Domain.pdb
+/home/runner/work/EventShop/EventShop/src/EventShop.Domain/obj/Debug/net8.0/ref/EventShop.Domain.dll

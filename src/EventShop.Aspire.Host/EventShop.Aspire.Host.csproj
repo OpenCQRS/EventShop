@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>dotnet-EventShop.Aspire.Host-4a0c1330-7e1d-4930-8db9-86677c1bf907</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventShop.Web.Server\EventShop.Web.Server.csproj" />
+    <ProjectReference Include="..\EventShop.Web.Client\EventShop.Web.Client.csproj" />
+  </ItemGroup>
+</Project>

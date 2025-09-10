@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/EventShop.Web.Client.props" />
+</Project>
