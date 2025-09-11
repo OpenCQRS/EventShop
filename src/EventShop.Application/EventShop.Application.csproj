@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="OpenCqrs" Version="7.1.2" />
+      <PackageReference Include="OpenCqrs.Validation.FluentValidation" Version="7.1.2" />
+    </ItemGroup>
+
 </Project>
