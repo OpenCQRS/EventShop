@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventShop.Domain", "src\Eve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventShop.Infrastructure", "src\EventShop.Infrastructure\EventShop.Infrastructure.csproj", "{54D31D76-E389-4B08-B900-7DEAB8FE5F65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventShop.Web", "src\EventShop.Web\EventShop.Web.csproj", "{F5A18B28-B706-414D-AF58-4F87EBA8101C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{54D31D76-E389-4B08-B900-7DEAB8FE5F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54D31D76-E389-4B08-B900-7DEAB8FE5F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54D31D76-E389-4B08-B900-7DEAB8FE5F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5A18B28-B706-414D-AF58-4F87EBA8101C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5A18B28-B706-414D-AF58-4F87EBA8101C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5A18B28-B706-414D-AF58-4F87EBA8101C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5A18B28-B706-414D-AF58-4F87EBA8101C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
