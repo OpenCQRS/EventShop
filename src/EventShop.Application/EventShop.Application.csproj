@@ -11,4 +11,15 @@
       <PackageReference Include="OpenCqrs.Validation.FluentValidation" Version="7.1.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Inventory\Commands\" />
+      <Folder Include="Inventory\Queries\" />
+      <Folder Include="Ordering\Commands\" />
+      <Folder Include="Ordering\Queries\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EventShop.Infrastructure\EventShop.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
