@@ -12,10 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Inventory\Commands\" />
-      <Folder Include="Inventory\Queries\" />
       <Folder Include="Ordering\Commands\" />
-      <Folder Include="Ordering\Queries\" />
     </ItemGroup>
 
     <ItemGroup>

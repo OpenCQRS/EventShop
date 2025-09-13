@@ -3,9 +3,8 @@ using OpenCqrs.Results;
 
 namespace EventShop.Application.Ordering.Commands;
 
-public record OrderItem(Guid ProductId, int Quantity, decimal Price);
-
 public record PlaceOrder(Guid CustomerId, List<OrderItem> Items) : ICommand<Guid>;
+public record OrderItem(Guid ProductId, int Quantity, decimal Price);
 
 public class PlaceOrderHandler : ICommandHandler<PlaceOrder, Guid>
 {
