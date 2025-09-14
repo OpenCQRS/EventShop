@@ -22,10 +22,10 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeFalse();
-            result.Failure.Should().NotBeNull();            
+            result.Failure.Should().NotBeNull();
         }
     }
-    
+
     [Fact]
     public async Task CreateProduct_ShouldSucceed_WhenValidDataProvided()
     {
@@ -34,16 +34,16 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
             Description: "This is a test product",
             Price: 19.99m
         );
-        
+
         var result = await Dispatcher.Send(createProduct);
 
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();            
-        }        
+            result.Value.Should().NotBeEmpty();
+        }
     }
-    
+
     [Fact]
     public async Task CreateProduct_ShouldSucceed_AndStoreProduct()
     {
@@ -60,13 +60,13 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeNull();            
+            result.Value.Should().NotBeNull();
             result.Value.ProductId.Should().Be(createProductResult.Value);
             result.Value.Name.Should().Be("Test Product");
             result.Value.Description.Should().Be("This is a test product");
             result.Value.Price.Should().Be(19.99m);
         }
     }
-    
+
     // TODO: Read model created
 }

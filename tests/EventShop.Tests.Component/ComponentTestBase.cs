@@ -17,7 +17,7 @@ public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Pr
     protected FakeTimeProvider TimeProvider = null!;
     private ActivitySource _activitySource = null!;
     private ActivityListener _activityListener = null!;
-    
+
     protected ComponentTestBase(WebApplicationFactory<Program> factory)
     {
         var webApplicationFactory = factory.WithWebHostBuilder(builder =>
@@ -26,14 +26,14 @@ public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Pr
             {
                 TimeProvider = new FakeTimeProvider();
                 var httpContextAccessor = HttpContextSetup.CreateHttpContextAccessor();
-                
+
                 DomainService = EntityFrameworkCoreSetup.CreateDomainService(TimeProvider, httpContextAccessor);
                 services.Replace(ServiceDescriptor.Scoped<IDomainService>(_ => DomainService));
             });
         });
 
         SetupActivity();
-        
+
         var serviceProvider = webApplicationFactory.Services;
         var scope = serviceProvider.CreateScope();
         Dispatcher = scope.ServiceProvider.GetRequiredService<IDispatcher>();
@@ -54,7 +54,7 @@ public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Pr
 
         _activitySource.StartActivity();
     }
-    
+
     public void Dispose()
     {
         _activityListener.Dispose();

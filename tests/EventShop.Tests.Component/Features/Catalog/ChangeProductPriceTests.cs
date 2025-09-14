@@ -15,14 +15,14 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
     {
         var changeProductPrice = new ChangeProductPrice(ProductId: Guid.NewGuid(), NewPrice: 18.99m);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
-        
+
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeFalse();
-            result.Failure.Should().NotBeNull();            
+            result.Failure.Should().NotBeNull();
         }
     }
-    
+
     [Fact]
     public async Task ChangeProductPrice_ShouldFail_WhenInvalidDataProvided()
     {
@@ -34,14 +34,14 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
 
         var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, NewPrice: -5.00m);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
-        
+
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeFalse();
-            result.Failure.Should().NotBeNull();            
+            result.Failure.Should().NotBeNull();
         }
     }
-    
+
     [Fact]
     public async Task ChangeProductPrice_ShouldSucceed_WhenValidDataProvided()
     {
@@ -60,7 +60,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             result.Failure.Should().BeNull();
         }
     }
-    
+
     [Fact]
     public async Task ChangeProductPrice_ShouldSucceed_AndPriceChanged()
     {
@@ -69,9 +69,9 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             Description: "This is a test product",
             Price: 19.99m
         ));
-        
+
         await Dispatcher.Send(new ChangeProductPrice(
-            ProductId: createProductResult.Value, 
+            ProductId: createProductResult.Value,
             NewPrice: 18.99m
         ));
 
@@ -82,13 +82,13 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
         using (new AssertionScope())
         {
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeNull();            
+            result.Value.Should().NotBeNull();
             result.Value.ProductId.Should().Be(createProductResult.Value);
             result.Value.Name.Should().Be("Test Product");
             result.Value.Description.Should().Be("This is a test product");
             result.Value.Price.Should().Be(19.99m);
         }
     }
-    
+
     // TODO: Read model updated
 }

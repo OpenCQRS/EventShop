@@ -16,11 +16,11 @@ public class Product : AggregateRoot
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
-    
+
     public Product()
     {
     }
-    
+
     public Product(Guid productId, string name, string description, decimal price)
     {
         Add(new ProductCreated(productId, name, description, price));
@@ -45,7 +45,7 @@ public class Product : AggregateRoot
 
         return true;
     }
-    
+
     private bool Apply(ProductPriceChanged @event)
     {
         return true;

@@ -16,7 +16,7 @@ public static class EntityFrameworkCoreSetup
         var dbContext = new ApplicationDbContext(dbContextOptions, timeProvider, createHttpContextAccessor);
         return new EntityFrameworkCoreDomainService(dbContext);
     }
-    
+
     private static DbContextOptions<IdentityDomainDbContext> CreateContextOptions()
     {
         var builder = new DbContextOptionsBuilder<IdentityDomainDbContext>();
