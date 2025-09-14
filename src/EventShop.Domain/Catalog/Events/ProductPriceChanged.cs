@@ -3,4 +3,4 @@
 namespace EventShop.Domain.Catalog.Events;
 
 [EventType("ProductPriceChanged")]
-public record ProductPriceChanged(Guid ProductId, decimal NewPrice);
+public record ProductPriceChanged(Guid Id, decimal NewPrice) : IEvent;

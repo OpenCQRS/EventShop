@@ -34,7 +34,7 @@ public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Pr
         SetupActivity();
         
         var serviceProvider = webApplicationFactory.Services;
-        using var scope = serviceProvider.CreateScope();
+        var scope = serviceProvider.CreateScope();
         Dispatcher = scope.ServiceProvider.GetRequiredService<IDispatcher>();
     }
 
