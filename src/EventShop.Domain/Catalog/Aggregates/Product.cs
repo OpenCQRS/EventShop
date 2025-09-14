@@ -12,7 +12,7 @@ public class Product : AggregateRoot
         typeof(ProductPriceChanged)
     ];
 
-    public Guid Id { get; set; }
+    public Guid ProductId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
@@ -21,9 +21,9 @@ public class Product : AggregateRoot
     {
     }
     
-    public Product(Guid id, string name, string description, decimal price)
+    public Product(Guid productId, string name, string description, decimal price)
     {
-        Add(new ProductCreated(id, name, description, price));
+        Add(new ProductCreated(productId, name, description, price));
     }
 
     protected override bool Apply<T>(T domainEvent)
@@ -38,7 +38,7 @@ public class Product : AggregateRoot
 
     private bool Apply(ProductCreated @event)
     {
-        Id = @event.Id;
+        ProductId = @event.ProductId;
         Name = @event.Name;
         Description = @event.Description;
         Price = @event.Price;

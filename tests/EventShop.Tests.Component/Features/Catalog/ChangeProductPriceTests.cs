@@ -6,14 +6,14 @@ using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-namespace EventShop.Tests.Component.Features;
+namespace EventShop.Tests.Component.Features.Catalog;
 
 public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : ComponentTestBase(factory)
 {
     [Fact]
     public async Task ChangeProductPrice_ShouldFail_WhenProductDoesNotExist()
     {
-        var changeProductPrice = new ChangeProductPrice(Id: Guid.NewGuid(), NewPrice: 18.99m);
+        var changeProductPrice = new ChangeProductPrice(ProductId: Guid.NewGuid(), NewPrice: 18.99m);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
         
         using (new AssertionScope())
@@ -32,7 +32,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             Price: 19.99m
         ));
 
-        var changeProductPrice = new ChangeProductPrice(Id: createProductResult.Value, NewPrice: -5.00m);
+        var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, NewPrice: -5.00m);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
         
         using (new AssertionScope())
@@ -51,7 +51,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             Price: 19.99m
         ));
 
-        var changeProductPrice = new ChangeProductPrice(Id: createProductResult.Value, NewPrice: 18.99m);
+        var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, NewPrice: 18.99m);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
 
         using (new AssertionScope())
@@ -71,7 +71,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
         ));
         
         await Dispatcher.Send(new ChangeProductPrice(
-            Id: createProductResult.Value, 
+            ProductId: createProductResult.Value, 
             NewPrice: 18.99m
         ));
 
@@ -83,7 +83,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
         {
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();            
-            result.Value.Id.Should().Be(createProductResult.Value);
+            result.Value.ProductId.Should().Be(createProductResult.Value);
             result.Value.Name.Should().Be("Test Product");
             result.Value.Description.Should().Be("This is a test product");
             result.Value.Price.Should().Be(19.99m);

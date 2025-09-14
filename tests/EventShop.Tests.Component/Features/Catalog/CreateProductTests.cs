@@ -6,7 +6,7 @@ using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-namespace EventShop.Tests.Component.Features;
+namespace EventShop.Tests.Component.Features.Catalog;
 
 public class CreateProductTests(WebApplicationFactory<Program> factory) : ComponentTestBase(factory)
 {
@@ -61,7 +61,7 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
         {
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();            
-            result.Value.Id.Should().Be(createProductResult.Value);
+            result.Value.ProductId.Should().Be(createProductResult.Value);
             result.Value.Name.Should().Be("Test Product");
             result.Value.Description.Should().Be("This is a test product");
             result.Value.Price.Should().Be(19.99m);
