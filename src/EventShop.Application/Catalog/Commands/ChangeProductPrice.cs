@@ -3,7 +3,7 @@ using OpenCqrs.Results;
 
 namespace EventShop.Application.Catalog.Commands;
 
-public record ChangeProductPrice(Guid ProductId, decimal Price) : ICommand;
+public record ChangeProductPrice(Guid Id, decimal NewPrice) : ICommand;
 
 public class ChangeProductPriceHandler : ICommandHandler<ChangeProductPrice>
 {

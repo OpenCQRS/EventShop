@@ -1,10 +1,12 @@
 using EventShop.Application.Catalog.Commands;
+using EventShop.Domain.Catalog.Aggregates;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EventShop.Web.Components;
 using EventShop.Web.Components.Account;
 using EventShop.Web.Data;
+using OpenCqrs.EventSourcing.Extensions;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Extensions;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Identity;
@@ -52,6 +54,7 @@ builder.Services
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 
 builder.Services.AddOpenCqrs(typeof(CreateProduct));
+builder.Services.AddOpenCqrsEventSourcing(typeof(Product));
 builder.Services.AddOpenCqrsEntityFrameworkCore<ApplicationDbContext>();
 builder.Services.AddOpenCqrsFluentValidation(typeof(CreateProduct));
 

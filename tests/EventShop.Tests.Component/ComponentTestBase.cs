@@ -13,6 +13,7 @@ namespace EventShop.Tests.Component;
 public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
     protected readonly IDispatcher Dispatcher;
+    protected IDomainService DomainService = null!;
     protected FakeTimeProvider TimeProvider = null!;
     private ActivitySource _activitySource = null!;
     private ActivityListener _activityListener = null!;
@@ -26,8 +27,8 @@ public abstract class ComponentTestBase : IClassFixture<WebApplicationFactory<Pr
                 TimeProvider = new FakeTimeProvider();
                 var httpContextAccessor = HttpContextSetup.CreateHttpContextAccessor();
                 
-                var domainService = EntityFrameworkCoreSetup.CreateDomainService(TimeProvider, httpContextAccessor);
-                services.Replace(ServiceDescriptor.Scoped<IDomainService>(_ => domainService));
+                DomainService = EntityFrameworkCoreSetup.CreateDomainService(TimeProvider, httpContextAccessor);
+                services.Replace(ServiceDescriptor.Scoped<IDomainService>(_ => DomainService));
             });
         });
 

@@ -1,5 +1,8 @@
 using EventShop.Application.Catalog.Commands;
+using EventShop.Domain.Catalog.Aggregates;
+using EventShop.Domain.Catalog.Streams;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -16,8 +19,11 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
         var createProduct = new CreateProduct(name, description, price);
         var result = await Dispatcher.Send(createProduct, validateCommand: true);
 
-        result.IsSuccess.Should().BeFalse();
-        result.Failure.Should().NotBeNull();
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeFalse();
+            result.Failure.Should().NotBeNull();            
+        }
     }
     
     [Fact]
@@ -31,7 +37,36 @@ public class CreateProductTests(WebApplicationFactory<Program> factory) : Compon
         
         var result = await Dispatcher.Send(createProduct);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeEmpty();
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeEmpty();            
+        }        
     }
+    
+    [Fact]
+    public async Task CreateProduct_ShouldSucceed_AndStoreProduct()
+    {
+        var createProductResult = await Dispatcher.Send(new CreateProduct(
+            Name: "Test Product",
+            Description: "This is a test product",
+            Price: 19.99m
+        ));
+
+        var streamId = new ProductStreamId(createProductResult.Value);
+        var aggregateId = new ProductAggregateId(createProductResult.Value);
+        var result = await DomainService.GetAggregate(streamId, aggregateId);
+
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();            
+            result.Value.Id.Should().Be(createProductResult.Value);
+            result.Value.Name.Should().Be("Test Product");
+            result.Value.Description.Should().Be("This is a test product");
+            result.Value.Price.Should().Be(19.99m);
+        }
+    }
+    
+    // TODO: Read model created
 }
