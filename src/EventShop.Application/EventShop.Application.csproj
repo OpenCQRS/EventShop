@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenCqrs" Version="7.1.2" />
-      <PackageReference Include="OpenCqrs.Validation.FluentValidation" Version="7.1.2" />
+      <PackageReference Include="OpenCqrs" Version="7.1.4" />
+      <PackageReference Include="OpenCqrs.Validation.FluentValidation" Version="7.1.4" />
     </ItemGroup>
 
     <ItemGroup>

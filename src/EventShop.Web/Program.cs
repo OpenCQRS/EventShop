@@ -1,9 +1,13 @@
+using EventShop.Application.Catalog.Commands;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EventShop.Web.Components;
 using EventShop.Web.Components.Account;
 using EventShop.Web.Data;
+using OpenCqrs.EventSourcing.Store.EntityFrameworkCore;
+using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Identity;
+using OpenCqrs.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +29,8 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -35,6 +39,17 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+var dbContextDescriptor = builder.Services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<IdentityDomainDbContext>));
+builder.Services.Remove(dbContextDescriptor!);
+builder.Services
+    .AddScoped(sp => new DbContextOptionsBuilder<IdentityDomainDbContext>()
+        .UseSqlite(connectionString)
+        .UseApplicationServiceProvider(sp)
+        .Options);
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+
+builder.Services.AddOpenCqrs(typeof(CreateProduct));
 
 var app = builder.Build();
 
@@ -52,7 +67,6 @@ else
 
 app.UseHttpsRedirection();
 
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -63,3 +77,5 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
+
+public partial class Program;
