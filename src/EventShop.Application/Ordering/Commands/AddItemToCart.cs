@@ -3,11 +3,11 @@ using OpenCqrs.Results;
 
 namespace EventShop.Application.Ordering.Commands;
 
-public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity, decimal Price) : ICommand;
+public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity, decimal Price) : ICommand<Guid>;
 
-public class AddItemToCartHandler : ICommandHandler<AddItemToCart>
+public class AddItemToCartHandler : ICommandHandler<AddItemToCart, Guid>
 {
-    public Task<Result> Handle(AddItemToCart command, CancellationToken cancellationToken = default)
+    public Task<Result<Guid>> Handle(AddItemToCart command, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

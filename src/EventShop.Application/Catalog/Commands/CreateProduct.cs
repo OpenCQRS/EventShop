@@ -1,5 +1,5 @@
 ﻿using EventShop.Domain.Catalog.Aggregates;
-using EventShop.Domain.Catalog.Streams;
+using EventShop.Domain.Streams;
 using FluentValidation;
 using OpenCqrs.Commands;
 using OpenCqrs.EventSourcing;
