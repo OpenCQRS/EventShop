@@ -6,8 +6,10 @@ using EventShop.Web.Components;
 using EventShop.Web.Components.Account;
 using EventShop.Web.Data;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore;
+using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Extensions;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Identity;
 using OpenCqrs.Extensions;
+using OpenCqrs.Validation.FluentValidation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +52,8 @@ builder.Services
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 
 builder.Services.AddOpenCqrs(typeof(CreateProduct));
+builder.Services.AddOpenCqrsEntityFrameworkCore<ApplicationDbContext>();
+builder.Services.AddOpenCqrsFluentValidation(typeof(CreateProduct));
 
 var app = builder.Build();
 

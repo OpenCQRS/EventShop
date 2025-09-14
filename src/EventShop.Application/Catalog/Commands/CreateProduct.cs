@@ -1,5 +1,6 @@
 ﻿using EventShop.Domain.Catalog.Aggregates;
 using EventShop.Domain.Catalog.Streams;
+using FluentValidation;
 using OpenCqrs.Commands;
 using OpenCqrs.EventSourcing;
 using OpenCqrs.Results;
@@ -7,6 +8,17 @@ using OpenCqrs.Results;
 namespace EventShop.Application.Catalog.Commands;
 
 public record CreateProduct(string Name, string Description, decimal Price) : ICommand<Guid>;
+
+public class CreateProductValidator : AbstractValidator<CreateProduct>
+{
+    public CreateProductValidator()
+    {
+        RuleFor(c => c.Name).NotEmpty().WithMessage("Name is required.");
+        RuleFor(c => c.Description).NotEmpty().WithMessage("Description is required.");
+        RuleFor(c => c.Price).NotEmpty().WithMessage("Price is required.");
+        RuleFor(c => c.Price).GreaterThanOrEqualTo(0).WithMessage("Price can't be negative.");
+    }
+}
 
 public class CreateProductHandler(IDomainService domainService) : ICommandHandler<CreateProduct, Guid>
 {
