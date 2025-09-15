@@ -1,3 +1,4 @@
+using EventShop.Domain.Catalog.Aggregates;
 using EventShop.Domain.Customers.Aggregates;
 using EventShop.Domain.Streams;
 using OpenCqrs.Commands;
@@ -12,20 +13,54 @@ public class AddItemToCartHandler(IDomainService domainService) : ICommandHandle
 {
     public async Task<Result<Guid>> Handle(AddItemToCart command, CancellationToken cancellationToken = default)
     {
-        var customerStreamId = new CustomerStreamId(command.CustomerId);
-        var customerAggregateId = new CustomerAggregateId(command.CustomerId);
+        var customerResult = await ValidateAndRetrieveCustomer(command.CustomerId, cancellationToken);
+        if (customerResult.IsNotSuccess)
+        {
+            return customerResult.Failure!;
+        }
+
+        var productResult = await ValidateAndRetrieveProduct(command.ProductId, cancellationToken);
+        if (productResult.IsNotSuccess)
+        {
+            return productResult.Failure!;
+        }
+        
+        return Guid.NewGuid();
+    }
+
+    private async Task<Result<Customer>> ValidateAndRetrieveCustomer(Guid customerId, CancellationToken cancellationToken)
+    {
+        var customerStreamId = new CustomerStreamId(customerId);
+        var customerAggregateId = new CustomerAggregateId(customerId);
         
         var customerResult = await domainService.GetAggregate(customerStreamId, customerAggregateId, cancellationToken: cancellationToken);
         if (customerResult.IsNotSuccess)
         {
             return customerResult.Failure!;
         }
-        var customer = customerResult.Value;
-        if (customer == null)
+        if (customerResult.Value == null)
         {
-            return new Failure(ErrorCode.NotFound, Title: "Customer not found", Description: $"Customer with ID {command.CustomerId} not found.");
+            return new Failure(ErrorCode.NotFound, Title: "Customer not found", Description: $"Customer with ID {customerId} not found.");
         }
 
-        return Guid.NewGuid();
+        return customerResult.Value;
+    }
+
+    private async Task<Result<Product>> ValidateAndRetrieveProduct(Guid productId, CancellationToken cancellationToken)
+    {
+        var productStreamId = new ProductStreamId(productId);
+        var productAggregateId = new ProductAggregateId(productId);
+        
+        var productResult = await domainService.GetAggregate(productStreamId, productAggregateId, cancellationToken: cancellationToken);
+        if (productResult.IsNotSuccess)
+        {
+            return productResult.Failure!;
+        }
+        if (productResult.Value == null)
+        {
+            return new Failure(ErrorCode.NotFound, Title: "Product not found", Description: $"Product with ID {productId} not found.");
+        }
+        
+        return productResult.Value;
     }
 }
