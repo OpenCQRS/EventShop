@@ -15,7 +15,7 @@ public class AddItemToCartTests : ComponentTestBase
     
     public AddItemToCartTests(WebApplicationFactory<Program> factory) : base(factory)
     {
-        var customerCreationResult = Dispatcher.Send(new CreateCustomer(Name: "Test User")).Result;
+        var customerCreationResult = Dispatcher.Send(new RegisterCustomer(Name: "Test User")).Result;
         CustomerId = customerCreationResult.Value;
         
         var productCreationResult = Dispatcher.Send(new CreateProduct(Name: "Test Product", Description: "Test Description", Price: 10m)).Result;
