@@ -1,49 +1,39 @@
 using EventShop.Domain.Catalog.Aggregates;
-using EventShop.Domain.Customers.Aggregates;
+using EventShop.Domain.Ordering.Aggregates;
 using EventShop.Domain.Streams;
+using FluentValidation;
 using OpenCqrs.Commands;
 using OpenCqrs.EventSourcing;
 using OpenCqrs.Results;
 
 namespace EventShop.Application.Ordering.Commands;
 
-public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity, decimal Price) : ICommand<Guid>;
+public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity, decimal Price) : ICommand;
 
-public class AddItemToCartHandler(IDomainService domainService) : ICommandHandler<AddItemToCart, Guid>
+public class AddItemToCartValidator : AbstractValidator<AddItemToCart>
 {
-    public async Task<Result<Guid>> Handle(AddItemToCart command, CancellationToken cancellationToken = default)
+    public AddItemToCartValidator()
     {
-        var customerResult = await ValidateAndRetrieveCustomer(command.CustomerId, cancellationToken);
-        if (customerResult.IsNotSuccess)
-        {
-            return customerResult.Failure!;
-        }
+        RuleFor(c => c.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than zero.");
+        RuleFor(c => c.Price).GreaterThan(-1).WithMessage("Price must be zero or greater.");
+    }
+}
 
+public class AddItemToCartHandler(IDomainService domainService) : ICommandHandler<AddItemToCart>
+{
+    public async Task<Result> Handle(AddItemToCart command, CancellationToken cancellationToken = default)
+    {
         var productResult = await ValidateAndRetrieveProduct(command.ProductId, cancellationToken);
         if (productResult.IsNotSuccess)
         {
             return productResult.Failure!;
         }
         
-        return Guid.NewGuid();
-    }
-
-    private async Task<Result<Customer>> ValidateAndRetrieveCustomer(Guid customerId, CancellationToken cancellationToken)
-    {
-        var customerStreamId = new CustomerStreamId(customerId);
-        var customerAggregateId = new CustomerAggregateId(customerId);
+        var shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, command.Price);
         
-        var customerResult = await domainService.GetAggregate(customerStreamId, customerAggregateId, cancellationToken: cancellationToken);
-        if (customerResult.IsNotSuccess)
-        {
-            return customerResult.Failure!;
-        }
-        if (customerResult.Value == null)
-        {
-            return new Failure(ErrorCode.NotFound, Title: "Customer not found", Description: $"Customer with ID {customerId} not found.");
-        }
-
-        return customerResult.Value;
+        var streamId = new CustomerStreamId(command.CustomerId);
+        var aggregateId = new ShoppingCartAggregateId(command.ShoppingCartId);
+        return await domainService.SaveAggregate(streamId, aggregateId, shoppingCart, expectedEventSequence: 0, cancellationToken: cancellationToken);
     }
 
     private async Task<Result<Product>> ValidateAndRetrieveProduct(Guid productId, CancellationToken cancellationToken)

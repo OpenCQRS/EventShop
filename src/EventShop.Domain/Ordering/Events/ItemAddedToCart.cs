@@ -3,4 +3,4 @@
 namespace EventShop.Domain.Ordering.Events;
 
 [EventType("ItemAddedToCart")]
-public record ItemAddedToCart(Guid ShoppingCartId, Guid ProductId, int Quantity);
+public record ItemAddedToCart(Guid ShoppingCartId, Guid ProductId, int Quantity, decimal UnitPrice) : IEvent;
