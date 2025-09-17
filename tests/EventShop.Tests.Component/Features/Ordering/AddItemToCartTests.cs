@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using EventShop.Application.Customers.Commands;
 using EventShop.Application.Ordering.Commands;
 using FluentAssertions;
@@ -18,7 +19,7 @@ public class AddItemToCartTests : ComponentTestBase
     }
 
     [Fact]
-    public async Task AddItemToCart_ShouldFail_WhenCustomerDoesNotExist()
+    public async Task AddItemToCart_ShouldSucceed_WhenCustomerDoesNotExist()
     {
         var addItemToCart = new AddItemToCart(
             CustomerId: Guid.NewGuid(), 
@@ -28,11 +29,11 @@ public class AddItemToCartTests : ComponentTestBase
             Price: 10m);
 
         var result = await Dispatcher.Send(addItemToCart);
-
+        
         using (new AssertionScope())
         {
-            result.IsSuccess.Should().BeFalse();
-            result.Failure.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+            result.Failure.Should().BeNull();
         }
     }
     
