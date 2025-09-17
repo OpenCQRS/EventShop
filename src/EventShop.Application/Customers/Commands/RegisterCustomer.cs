@@ -7,9 +7,9 @@ using OpenCqrs.Results;
 
 namespace EventShop.Application.Customers.Commands;
 
-public record CreateCustomer(string Name) : ICommand<Guid>;
+public record RegisterCustomer(string Name) : ICommand<Guid>;
 
-public class CreateCustomerValidator : AbstractValidator<CreateCustomer>
+public class CreateCustomerValidator : AbstractValidator<RegisterCustomer>
 {
     public CreateCustomerValidator()
     {
@@ -17,9 +17,9 @@ public class CreateCustomerValidator : AbstractValidator<CreateCustomer>
     }
 }
 
-public class CreateCustomerHandler(IDomainService domainService) : ICommandHandler<CreateCustomer, Guid>
+public class RegisterCustomerHandler(IDomainService domainService) : ICommandHandler<RegisterCustomer, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateCustomer command, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid>> Handle(RegisterCustomer command, CancellationToken cancellationToken = default)
     {
         var customerId = Guid.NewGuid();
         var streamId = new CustomerStreamId(customerId);

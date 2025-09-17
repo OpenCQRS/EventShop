@@ -11,8 +11,46 @@ public class ShoppingCart : AggregateRoot
         typeof(ItemAddedToCart)
     ];
 
-    protected override bool Apply<T>(T @event)
+    public Guid ShoppingCartId { get; private set; }
+    
+    private readonly List<ShoppingCartItem> _shoppingCartItems = [];
+    public IEnumerable<ShoppingCartItem> ShoppingCartItems => _shoppingCartItems.AsReadOnly();
+    
+    public ShoppingCart()
     {
-        throw new NotImplementedException();
     }
+
+    public ShoppingCart(Guid shoppingCartId, Guid productId, int quantity, decimal unitPrice)
+    {
+        Add(new ItemAddedToCart(shoppingCartId, productId, quantity, unitPrice));
+    }
+
+    protected override bool Apply<T>(T domainEvent)
+    {
+        return domainEvent switch
+        {
+            ItemAddedToCart @event => Apply(@event),
+            _ => false
+        };
+    }
+
+    private bool Apply(ItemAddedToCart @event)
+    {
+        ShoppingCartId = @event.ShoppingCartId;
+        _shoppingCartItems.Add(new ShoppingCartItem
+        {
+            ProductId = @event.ProductId,
+            Quantity = @event.Quantity,
+            UnitPrice = @event.UnitPrice
+        });
+
+        return true;
+    }
+}
+
+public class ShoppingCartItem
+{
+    public required Guid ProductId { get; set; }
+    public required int Quantity { get; set; }
+    public required decimal UnitPrice { get; set; }
 }

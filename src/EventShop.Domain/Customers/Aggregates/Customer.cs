@@ -8,7 +8,7 @@ public class Customer : AggregateRoot
 {
     public override Type[] EventTypeFilter =>
     [
-        typeof(CustomerCreated)
+        typeof(CustomerRegistered)
     ];
 
     public Guid CustomerId { get; set; }
@@ -20,19 +20,19 @@ public class Customer : AggregateRoot
 
     public Customer(Guid customerId, string name)
     {
-        Add(new CustomerCreated(customerId, name));
+        Add(new CustomerRegistered(customerId, name));
     }
 
     protected override bool Apply<T>(T domainEvent)
     {
         return domainEvent switch
         {
-            CustomerCreated @event => Apply(@event),
+            CustomerRegistered @event => Apply(@event),
             _ => false
         };
     }
 
-    private bool Apply(CustomerCreated @event)
+    private bool Apply(CustomerRegistered @event)
     {
         CustomerId = @event.CustomerId;
         Name = @event.Name;
