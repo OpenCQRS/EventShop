@@ -15,7 +15,7 @@ public class AddItemToCartValidator : AbstractValidator<AddItemToCart>
     public AddItemToCartValidator()
     {
         RuleFor(c => c.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than zero.");
-        RuleFor(c => c.Price).GreaterThan(-1).WithMessage("Price must be zero or greater.");
+        RuleFor(c => c.Price).GreaterThanOrEqualTo(0).WithMessage("Price must be zero or greater.");
     }
 }
 

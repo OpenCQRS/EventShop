@@ -84,15 +84,18 @@ public class AddItemToCartTests : ComponentTestBase
         }
     }
 
-    [Fact]
-    public async Task AddItemToCart_ShouldFail_WhenPriceIsNegative()
+    [Theory]
+    [InlineData(-10)]
+    [InlineData(-1)]
+    [InlineData(-0.00000000001)]
+    public async Task AddItemToCart_ShouldFail_WhenPriceIsNegative(decimal price)
     {
         var addItemToCart = new AddItemToCart(
             _customerId,
             ShoppingCartId: Guid.NewGuid(),
             _productId,
             Quantity: 1,
-            Price: -1m);
+            price);
 
         var result = await Dispatcher.Send(addItemToCart, validateCommand: true);
 
@@ -113,7 +116,7 @@ public class AddItemToCartTests : ComponentTestBase
             ShoppingCartId: Guid.NewGuid(),
             _productId,
             Quantity: 1,
-            Price: price);
+            price);
 
         var result = await Dispatcher.Send(addItemToCart, validateCommand: true);
 
