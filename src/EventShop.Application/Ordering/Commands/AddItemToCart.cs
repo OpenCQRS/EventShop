@@ -28,19 +28,25 @@ public class AddItemToCartHandler(IDomainService domainService) : ICommandHandle
         {
             return productResult.Failure!;
         }
-        
-        var shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, command.Price);
-        
+
         var streamId = new CustomerStreamId(command.CustomerId);
+        var latestEventSequence = await domainService.GetLatestEventSequence(streamId, cancellationToken: cancellationToken);
+        if (latestEventSequence.IsNotSuccess)
+        {
+            return latestEventSequence.Failure!;
+        }
+
+        var shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, command.Price);
+
         var aggregateId = new ShoppingCartAggregateId(command.ShoppingCartId);
-        return await domainService.SaveAggregate(streamId, aggregateId, shoppingCart, expectedEventSequence: 0, cancellationToken: cancellationToken);
+        return await domainService.SaveAggregate(streamId, aggregateId, shoppingCart, expectedEventSequence: latestEventSequence.Value, cancellationToken: cancellationToken);
     }
 
     private async Task<Result<Product>> ValidateAndRetrieveProduct(Guid productId, CancellationToken cancellationToken)
     {
         var productStreamId = new ProductStreamId(productId);
         var productAggregateId = new ProductAggregateId(productId);
-        
+
         var productResult = await domainService.GetAggregate(productStreamId, productAggregateId, cancellationToken: cancellationToken);
         if (productResult.IsNotSuccess)
         {
@@ -50,7 +56,7 @@ public class AddItemToCartHandler(IDomainService domainService) : ICommandHandle
         {
             return new Failure(ErrorCode.NotFound, Title: "Product not found", Description: $"Product with ID {productId} not found.");
         }
-        
+
         return productResult.Value;
     }
 }

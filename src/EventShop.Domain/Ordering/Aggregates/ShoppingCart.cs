@@ -1,4 +1,5 @@
 ﻿using EventShop.Domain.Ordering.Events;
+using Newtonsoft.Json;
 using OpenCqrs.EventSourcing.Domain;
 
 namespace EventShop.Domain.Ordering.Aggregates;
@@ -12,10 +13,12 @@ public class ShoppingCart : AggregateRoot
     ];
 
     public Guid ShoppingCartId { get; private set; }
-    
+
+    [JsonProperty(nameof(ShoppingCartItems))]
     private readonly List<ShoppingCartItem> _shoppingCartItems = [];
+    [JsonIgnore]
     public IEnumerable<ShoppingCartItem> ShoppingCartItems => _shoppingCartItems.AsReadOnly();
-    
+
     public ShoppingCart()
     {
     }
