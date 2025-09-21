@@ -1,5 +1,6 @@
 ﻿using EventShop.Domain.Catalog.Events;
 using OpenCqrs.EventSourcing.Domain;
+using OpenCqrs.Results;
 
 namespace EventShop.Domain.Catalog.Aggregates;
 
@@ -26,6 +27,18 @@ public class Product : AggregateRoot
         Add(new ProductCreated(productId, name, description, price));
     }
 
+    public Result ChangePrice(decimal newPrice)
+    {
+        if (newPrice == Price)
+        {
+            return new Failure(Title: "Price not changed", Description: "The new price is the same as the current price.");
+        }
+
+        Add(new ProductPriceChanged(ProductId, newPrice));
+
+        return Result.Ok();
+    }
+
     protected override bool Apply<T>(T domainEvent)
     {
         return domainEvent switch
@@ -48,6 +61,8 @@ public class Product : AggregateRoot
 
     private bool Apply(ProductPriceChanged @event)
     {
+        Price = @event.NewPrice;
+
         return true;
     }
 }

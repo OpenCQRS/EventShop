@@ -23,8 +23,10 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
         }
     }
 
-    [Fact]
-    public async Task ChangeProductPrice_ShouldFail_WhenInvalidDataProvided()
+    [Theory]
+    [InlineData(-0.0000001)]
+    [InlineData(-5)]
+    public async Task ChangeProductPrice_ShouldFail_WhenNewPriceIsNegative(decimal newPrice)
     {
         var createProductResult = await Dispatcher.Send(new CreateProduct(
             Name: "Test Product",
@@ -32,7 +34,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             Price: 19.99m
         ));
 
-        var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, NewPrice: -5.00m);
+        var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, newPrice);
         var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
 
         using (new AssertionScope())
@@ -43,7 +45,28 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
     }
 
     [Fact]
-    public async Task ChangeProductPrice_ShouldSucceed_WhenValidDataProvided()
+    public async Task ChangeProductPrice_ShouldFail_WhenNewPriceIsSameOfCurrentPrice()
+    {
+        var createProductResult = await Dispatcher.Send(new CreateProduct(
+            Name: "Test Product",
+            Description: "This is a test product",
+            Price: 19.99m
+        ));
+
+        var changeProductPrice = new ChangeProductPrice(ProductId: createProductResult.Value, 19.99m);
+        var result = await Dispatcher.Send(changeProductPrice, validateCommand: true);
+
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeFalse();
+            result.Failure.Should().NotBeNull();
+            result.Failure.Title.Should().Be("Price not changed");
+            result.Failure.Description.Should().Be("The new price is the same as the current price.");
+        }
+    }
+
+    [Fact]
+    public async Task ChangeProductPrice_ShouldSucceed_WhenNewPriceIsValid()
     {
         var createProductResult = await Dispatcher.Send(new CreateProduct(
             Name: "Test Product",
@@ -86,7 +109,7 @@ public class ChangeProductPriceTests(WebApplicationFactory<Program> factory) : C
             result.Value.ProductId.Should().Be(createProductResult.Value);
             result.Value.Name.Should().Be("Test Product");
             result.Value.Description.Should().Be("This is a test product");
-            result.Value.Price.Should().Be(19.99m);
+            result.Value.Price.Should().Be(18.99m);
         }
     }
 
