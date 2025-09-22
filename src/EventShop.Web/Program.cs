@@ -7,7 +7,6 @@ using EventShop.Web.Components;
 using EventShop.Web.Components.Account;
 using EventShop.Web.Data;
 using OpenCqrs.EventSourcing.Extensions;
-using OpenCqrs.EventSourcing.Store.EntityFrameworkCore;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Extensions;
 using OpenCqrs.EventSourcing.Store.EntityFrameworkCore.Identity;
 using OpenCqrs.Extensions;

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using EventShop.Application.Catalog.Commands;
 using EventShop.Application.Customers.Commands;
 using EventShop.Application.Ordering.Commands;
