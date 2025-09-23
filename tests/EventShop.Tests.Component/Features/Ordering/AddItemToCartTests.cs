@@ -13,15 +13,19 @@ namespace EventShop.Tests.Component.Features.Ordering;
 public class AddItemToCartTests : ComponentTestBase
 {
     private readonly Guid _customerId;
-    private readonly Guid _productId;
+    private readonly Guid _productId1;
+    private readonly Guid _productId2;
 
     public AddItemToCartTests(WebApplicationFactory<Program> factory) : base(factory)
     {
         var customerCreationResult = Dispatcher.Send(new RegisterCustomer(Name: "Test User")).Result;
         _customerId = customerCreationResult.Value;
 
-        var productCreationResult = Dispatcher.Send(new CreateProduct(Name: "Test Product", Description: "Test Description", Price: 10m)).Result;
-        _productId = productCreationResult.Value;
+        var productCreationResult1 = Dispatcher.Send(new CreateProduct(Name: "Test Product 1", Description: "Test Description 1", Price: 10m)).Result;
+        _productId1 = productCreationResult1.Value;
+
+        var productCreationResult2 = Dispatcher.Send(new CreateProduct(Name: "Test Product 2", Description: "Test Description 2", Price: 20m)).Result;
+        _productId2 = productCreationResult2.Value;
     }
 
     [Fact]
@@ -30,9 +34,8 @@ public class AddItemToCartTests : ComponentTestBase
         var addItemToCart = new AddItemToCart(
             CustomerId: Guid.NewGuid(),
             ShoppingCartId: Guid.NewGuid(),
-            _productId,
-            Quantity: 1,
-            Price: 10m);
+            _productId1,
+            Quantity: 1);
 
         var result = await Dispatcher.Send(addItemToCart);
 
@@ -50,8 +53,7 @@ public class AddItemToCartTests : ComponentTestBase
             _customerId,
             ShoppingCartId: Guid.NewGuid(),
             ProductId: Guid.NewGuid(),
-            Quantity: 1,
-            Price: 10m);
+            Quantity: 1);
 
         var result = await Dispatcher.Send(addItemToCart);
 
@@ -70,9 +72,8 @@ public class AddItemToCartTests : ComponentTestBase
         var addItemToCart = new AddItemToCart(
             _customerId,
             ShoppingCartId: Guid.NewGuid(),
-            _productId,
-            Quantity: quantity,
-            Price: 10m);
+            _productId1,
+            Quantity: quantity);
 
         var result = await Dispatcher.Send(addItemToCart, validateCommand: true);
 
@@ -80,49 +81,6 @@ public class AddItemToCartTests : ComponentTestBase
         {
             result.IsSuccess.Should().BeFalse();
             result.Failure.Should().NotBeNull();
-        }
-    }
-
-    [Theory]
-    [InlineData(-10)]
-    [InlineData(-1)]
-    [InlineData(-0.00000000001)]
-    public async Task AddItemToCart_ShouldFail_WhenPriceIsNegative(decimal price)
-    {
-        var addItemToCart = new AddItemToCart(
-            _customerId,
-            ShoppingCartId: Guid.NewGuid(),
-            _productId,
-            Quantity: 1,
-            price);
-
-        var result = await Dispatcher.Send(addItemToCart, validateCommand: true);
-
-        using (new AssertionScope())
-        {
-            result.IsSuccess.Should().BeFalse();
-            result.Failure.Should().NotBeNull();
-        }
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    public async Task AddItemToCart_ShouldSucceed_WhenPriceIsNotNegative(decimal price)
-    {
-        var addItemToCart = new AddItemToCart(
-            _customerId,
-            ShoppingCartId: Guid.NewGuid(),
-            _productId,
-            Quantity: 1,
-            price);
-
-        var result = await Dispatcher.Send(addItemToCart, validateCommand: true);
-
-        using (new AssertionScope())
-        {
-            result.IsSuccess.Should().BeTrue();
-            result.Failure.Should().BeNull();
         }
     }
 
@@ -136,9 +94,8 @@ public class AddItemToCartTests : ComponentTestBase
         await Dispatcher.Send(new AddItemToCart(
             _customerId,
             shoppingCartId,
-            _productId,
-            Quantity: 1,
-            Price: 10m));
+            _productId1,
+            Quantity: 1));
 
         var result = await DomainService.GetAggregate(streamId, aggregateId);
 
@@ -149,13 +106,49 @@ public class AddItemToCartTests : ComponentTestBase
             result.Value.Should().NotBeNull();
             result.Value.ShoppingCartId.Should().Be(shoppingCartId);
             result.Value.ShoppingCartItems.Count().Should().Be(1);
-            result.Value.ShoppingCartItems.Single().ProductId.Should().Be(_productId);
+            result.Value.ShoppingCartItems.Single().ProductId.Should().Be(_productId1);
             result.Value.ShoppingCartItems.Single().Quantity.Should().Be(1);
             result.Value.ShoppingCartItems.Single().UnitPrice.Should().Be(10m);
         }
     }
 
-    // TODO: If valid data provided, it should succeed and item added to cart
+    [Fact]
+    public async Task AddItemToCart_ShouldAddMultipleProducts()
+    {
+        var shoppingCartId = Guid.NewGuid();
+        var streamId = new CustomerStreamId(_customerId);
+        var aggregateId = new ShoppingCartAggregateId(shoppingCartId);
+
+        await Dispatcher.Send(new AddItemToCart(
+            _customerId,
+            shoppingCartId,
+            _productId1,
+            Quantity: 1));
+
+        await Dispatcher.Send(new AddItemToCart(
+            _customerId,
+            shoppingCartId,
+            _productId2,
+            Quantity: 2));
+
+        var result = await DomainService.GetAggregate(streamId, aggregateId);
+
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeTrue();
+            result.Failure.Should().BeNull();
+            result.Value.Should().NotBeNull();
+            result.Value.ShoppingCartId.Should().Be(shoppingCartId);
+            result.Value.ShoppingCartItems.Count().Should().Be(2);
+            result.Value.ShoppingCartItems.First().ProductId.Should().Be(_productId1);
+            result.Value.ShoppingCartItems.First().Quantity.Should().Be(1);
+            result.Value.ShoppingCartItems.First().UnitPrice.Should().Be(10m);
+            result.Value.ShoppingCartItems.Last().ProductId.Should().Be(_productId2);
+            result.Value.ShoppingCartItems.Last().Quantity.Should().Be(2);
+            result.Value.ShoppingCartItems.Last().UnitPrice.Should().Be(20m);
+        }
+    }
+
     // TODO: If item already exists in cart, it should update the quantity
     // TODO: If multiple items added, it should add all items to cart
     // TODO: If valid data provided, it should succeed and read model created

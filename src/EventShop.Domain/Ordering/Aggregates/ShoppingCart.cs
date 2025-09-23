@@ -28,6 +28,11 @@ public class ShoppingCart : AggregateRoot
         Add(new ItemAddedToCart(shoppingCartId, productId, quantity, unitPrice));
     }
 
+    public void AddItem(Guid productId, int quantity, decimal unitPrice)
+    {
+        Add(new ItemAddedToCart(ShoppingCartId, productId, quantity, unitPrice));
+    }
+
     protected override bool Apply<T>(T domainEvent)
     {
         return domainEvent switch

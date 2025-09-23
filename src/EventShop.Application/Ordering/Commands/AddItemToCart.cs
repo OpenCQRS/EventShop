@@ -8,14 +8,13 @@ using OpenCqrs.Results;
 
 namespace EventShop.Application.Ordering.Commands;
 
-public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity, decimal Price) : ICommand;
+public record AddItemToCart(Guid CustomerId, Guid ShoppingCartId, Guid ProductId, int Quantity) : ICommand;
 
 public class AddItemToCartValidator : AbstractValidator<AddItemToCart>
 {
     public AddItemToCartValidator()
     {
         RuleFor(c => c.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than zero.");
-        RuleFor(c => c.Price).GreaterThanOrEqualTo(0).WithMessage("Price must be zero or greater.");
     }
 }
 
@@ -30,15 +29,32 @@ public class AddItemToCartHandler(IDomainService domainService) : ICommandHandle
         }
 
         var streamId = new CustomerStreamId(command.CustomerId);
+        var aggregateId = new ShoppingCartAggregateId(command.ShoppingCartId);
+
         var latestEventSequence = await domainService.GetLatestEventSequence(streamId, cancellationToken: cancellationToken);
         if (latestEventSequence.IsNotSuccess)
         {
             return latestEventSequence.Failure!;
         }
 
-        var shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, command.Price);
+        var shoppingCartResult = await domainService.GetAggregate(streamId, aggregateId, cancellationToken: cancellationToken);
+        if (shoppingCartResult.IsNotSuccess)
+        {
+            return shoppingCartResult.Failure!;
+        }
 
-        var aggregateId = new ShoppingCartAggregateId(command.ShoppingCartId);
+        ShoppingCart shoppingCart;
+
+        if (shoppingCartResult.Value is null)
+        {
+            shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, productResult.Value!.Price);
+        }
+        else
+        {
+            shoppingCart = shoppingCartResult.Value!;
+            shoppingCart.AddItem(command.ProductId, command.Quantity, productResult.Value!.Price);
+        }
+
         return await domainService.SaveAggregate(streamId, aggregateId, shoppingCart, expectedEventSequence: latestEventSequence.Value, cancellationToken: cancellationToken);
     }
 
