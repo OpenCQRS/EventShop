@@ -30,7 +30,16 @@ public class ShoppingCart : AggregateRoot
 
     public void AddItem(Guid productId, int quantity, decimal unitPrice)
     {
-        Add(new ItemAddedToCart(ShoppingCartId, productId, quantity, unitPrice));
+        var existingItem = _shoppingCartItems.FirstOrDefault(i => i.ProductId == productId);
+        if (existingItem != null)
+        {
+            var newQuantity = existingItem.Quantity + quantity;
+            Add(new ItemQuantityUpdated(ShoppingCartId, productId, newQuantity));
+        }
+        else
+        {
+            Add(new ItemAddedToCart(ShoppingCartId, productId, quantity, unitPrice));
+        }
     }
 
     protected override bool Apply<T>(T domainEvent)
@@ -38,6 +47,7 @@ public class ShoppingCart : AggregateRoot
         return domainEvent switch
         {
             ItemAddedToCart @event => Apply(@event),
+            ItemQuantityUpdated @event => Apply(@event),
             _ => false
         };
     }
@@ -51,6 +61,19 @@ public class ShoppingCart : AggregateRoot
             Quantity = @event.Quantity,
             UnitPrice = @event.UnitPrice
         });
+
+        return true;
+    }
+    
+    private bool Apply(ItemQuantityUpdated @event)
+    {
+        var existingItem = _shoppingCartItems.FirstOrDefault(i => i.ProductId == @event.ProductId);
+        if (existingItem == null)
+        {
+            return false;
+        }
+
+        existingItem.Quantity = @event.NewQuantity;
 
         return true;
     }

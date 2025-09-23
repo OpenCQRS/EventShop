@@ -149,7 +149,40 @@ public class AddItemToCartTests : ComponentTestBase
         }
     }
 
-    // TODO: If item already exists in cart, it should update the quantity
+    [Fact]
+    public async Task AddItemToCart_ShouldUpdateQuantityIfProductAlreadyAdded()
+    {
+        var shoppingCartId = Guid.NewGuid();
+        var streamId = new CustomerStreamId(_customerId);
+        var aggregateId = new ShoppingCartAggregateId(shoppingCartId);
+
+        await Dispatcher.Send(new AddItemToCart(
+            _customerId,
+            shoppingCartId,
+            _productId1,
+            Quantity: 1));
+
+        await Dispatcher.Send(new AddItemToCart(
+            _customerId,
+            shoppingCartId,
+            _productId1,
+            Quantity: 3));
+        
+        var result = await DomainService.GetAggregate(streamId, aggregateId);
+
+        using (new AssertionScope())
+        {
+            result.IsSuccess.Should().BeTrue();
+            result.Failure.Should().BeNull();
+            result.Value.Should().NotBeNull();
+            result.Value.ShoppingCartId.Should().Be(shoppingCartId);
+            result.Value.ShoppingCartItems.Count().Should().Be(1);
+            result.Value.ShoppingCartItems.Single().ProductId.Should().Be(_productId1);
+            result.Value.ShoppingCartItems.Single().Quantity.Should().Be(4);
+            result.Value.ShoppingCartItems.Single().UnitPrice.Should().Be(10m);
+        }
+    }
+    
     // TODO: If multiple items added, it should add all items to cart
     // TODO: If valid data provided, it should succeed and read model created
     // TODO: If item already exists in cart, it should update the quantity and read model updated
