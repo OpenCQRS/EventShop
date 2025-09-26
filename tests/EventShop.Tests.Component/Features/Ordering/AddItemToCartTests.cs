@@ -167,7 +167,7 @@ public class AddItemToCartTests : ComponentTestBase
             shoppingCartId,
             _productId1,
             Quantity: 3));
-        
+
         var result = await DomainService.GetAggregate(streamId, aggregateId);
 
         using (new AssertionScope())
@@ -182,8 +182,7 @@ public class AddItemToCartTests : ComponentTestBase
             result.Value.ShoppingCartItems.Single().UnitPrice.Should().Be(10m);
         }
     }
-    
-    // TODO: If multiple items added, it should add all items to cart
+
     // TODO: If valid data provided, it should succeed and read model created
     // TODO: If item already exists in cart, it should update the quantity and read model updated
 }

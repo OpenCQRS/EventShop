@@ -23,9 +23,9 @@ public class ShoppingCart : AggregateRoot
     {
     }
 
-    public ShoppingCart(Guid shoppingCartId, Guid productId, int quantity, decimal unitPrice)
+    public ShoppingCart(Guid shoppingCartId)
     {
-        Add(new ItemAddedToCart(shoppingCartId, productId, quantity, unitPrice));
+        Add(new ShoppingCartCreated(shoppingCartId));
     }
 
     public void AddItem(Guid productId, int quantity, decimal unitPrice)
@@ -34,11 +34,11 @@ public class ShoppingCart : AggregateRoot
         if (existingItem != null)
         {
             var newQuantity = existingItem.Quantity + quantity;
-            Add(new ItemQuantityUpdated(ShoppingCartId, productId, newQuantity));
+            Add(new ItemQuantityUpdated(productId, newQuantity));
         }
         else
         {
-            Add(new ItemAddedToCart(ShoppingCartId, productId, quantity, unitPrice));
+            Add(new ItemAddedToCart(productId, quantity, unitPrice));
         }
     }
 
@@ -46,15 +46,22 @@ public class ShoppingCart : AggregateRoot
     {
         return domainEvent switch
         {
+            ShoppingCartCreated @event => Apply(@event),
             ItemAddedToCart @event => Apply(@event),
             ItemQuantityUpdated @event => Apply(@event),
             _ => false
         };
     }
 
-    private bool Apply(ItemAddedToCart @event)
+    private bool Apply(ShoppingCartCreated @event)
     {
         ShoppingCartId = @event.ShoppingCartId;
+
+        return true;
+    }
+
+    private bool Apply(ItemAddedToCart @event)
+    {
         _shoppingCartItems.Add(new ShoppingCartItem
         {
             ProductId = @event.ProductId,
@@ -64,7 +71,7 @@ public class ShoppingCart : AggregateRoot
 
         return true;
     }
-    
+
     private bool Apply(ItemQuantityUpdated @event)
     {
         var existingItem = _shoppingCartItems.FirstOrDefault(i => i.ProductId == @event.ProductId);

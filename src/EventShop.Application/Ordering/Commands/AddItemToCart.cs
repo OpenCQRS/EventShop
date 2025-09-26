@@ -43,17 +43,11 @@ public class AddItemToCartHandler(IDomainService domainService) : ICommandHandle
             return shoppingCartResult.Failure!;
         }
 
-        ShoppingCart shoppingCart;
+        var shoppingCart = shoppingCartResult.Value is null
+            ? new ShoppingCart(command.ShoppingCartId)
+            : shoppingCartResult.Value!;
 
-        if (shoppingCartResult.Value is null)
-        {
-            shoppingCart = new ShoppingCart(command.ShoppingCartId, command.ProductId, command.Quantity, productResult.Value!.Price);
-        }
-        else
-        {
-            shoppingCart = shoppingCartResult.Value!;
-            shoppingCart.AddItem(command.ProductId, command.Quantity, productResult.Value!.Price);
-        }
+        shoppingCart.AddItem(command.ProductId, command.Quantity, productResult.Value!.Price);
 
         return await domainService.SaveAggregate(streamId, aggregateId, shoppingCart, expectedEventSequence: latestEventSequence.Value, cancellationToken: cancellationToken);
     }
